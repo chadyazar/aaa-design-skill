@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Architecture of Decisions — Midnight Editorial Template</title>
+<!--
+  REFERENCE TEMPLATE: Midnight Editorial / Paper & Ink article page.
+  Study these patterns:
+  - Left-aligned editorial hero (NOT centered) with category tag above heading
+  - Serif heading + body (Newsreader + Literata via Google Fonts)
+  - Drop cap on first paragraph (::first-letter, 3.5em float)
+  - Pull quote: large italic, left-border accent, generous margin
+  - Callout boxes: tip/warning/info variants, left border + tinted background
+  - Blockquote: indented, light left rule, different from pull quote
+  - Code: inline + block with syntax-highlighted look
+  - Image placeholder with figcaption
+  - Table of contents: fixed sidebar desktop, sticky horizontal bar mobile
+  - IntersectionObserver scrollspy — highlights current section in TOC
+  - Social share bar: fixed bottom on mobile, sidebar on desktop
+  - Author bio card + related articles footer grid
+  - Full light + dark themes via prefers-color-scheme AND manual toggle
+  - Smooth scroll for TOC anchors
+  - @media print: clean, no sidebars, black on white
+  - prefers-reduced-motion respected
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,600&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  /* Light theme (default) */
+  --bg:           #faf9f7;   /* warm off-white — NOT stark white */
+  --surface:      #ffffff;
+  --surface2:     #f4f2ef;
+  --border:       rgba(0,0,0,0.1);
+  --border-mid:   rgba(0,0,0,0.15);
+
+  --text:         #1a1814;   /* warm near-black */
+  --text-dim:     #6b6560;
+  --text-muted:   #9c9590;
+  --text-bright:  #0f0e0c;
+
+  --accent:       #b45309;   /* warm amber — editorial ink feel */
+  --accent-dim:   rgba(180, 83, 9, 0.08);
+
+  /* Semantic callout colors */
+  --info-border:  #2563eb;
+  --info-bg:      rgba(37, 99, 235, 0.06);
+  --warn-border:  #d97706;
+  --warn-bg:      rgba(217, 119, 6, 0.07);
+  --tip-border:   #059669;
+  --tip-bg:       rgba(5, 150, 105, 0.06);
+
+  /* Typography */
+  --font-serif:   'Newsreader', 'Georgia', serif;
+  --font-body:    'Literata', 'Georgia', serif;
+  --font-mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  --font-sans:    system-ui, -apple-system, sans-serif;
+
+  /* Layout */
+  --prose-max:    65ch;
+  --toc-width:    210px;
+  --share-width:  48px;
+
+  /* Transitions */
+  --t: 0.2s ease;
+}
+
+/* Dark theme — rich ink / midnight press */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:          #111009;
+    --surface:     #1a1814;
+    --surface2:    #231f1a;
+    --border:      rgba(255,255,255,0.08);
+    --border-mid:  rgba(255,255,255,0.13);
+
+    --text:        #e8e4dc;
+    --text-dim:    #9a9088;
+    --text-muted:  #665f58;
+    --text-bright: #f2ede5;
+
+    --accent:      #f59e0b;
+    --accent-dim:  rgba(245, 158, 11, 0.1);
+
+    --info-border: #60a5fa;
+    --info-bg:     rgba(96, 165, 250, 0.08);
+    --warn-border: #fbbf24;
+    --warn-bg:     rgba(251, 191, 36, 0.08);
+    --tip-border:  #34d399;
+    --tip-bg:      rgba(52, 211, 153, 0.08);
+  }
+}
+
+/* Manual dark toggle via class — overrides prefers-color-scheme */
+html.dark {
+  --bg:          #111009;
+  --surface:     #1a1814;
+  --surface2:    #231f1a;
+  --border:      rgba(255,255,255,0.08);
+  --border-mid:  rgba(255,255,255,0.13);
+  --text:        #e8e4dc;
+  --text-dim:    #9a9088;
+  --text-muted:  #665f58;
+  --text-bright: #f2ede5;
+  --accent:      #f59e0b;
+  --accent-dim:  rgba(245, 158, 11, 0.1);
+  --info-border: #60a5fa;
+  --info-bg:     rgba(96, 165, 250, 0.08);
+  --warn-border: #fbbf24;
+  --warn-bg:     rgba(251, 191, 36, 0.08);
+  --tip-border:  #34d399;
+  --tip-bg:      rgba(52, 211, 153, 0.08);
+}
+
+html.light {
+  --bg:          #faf9f7;
+  --surface:     #ffffff;
+  --surface2:    #f4f2ef;
+  --border:      rgba(0,0,0,0.1);
+  --border-mid:  rgba(0,0,0,0.15);
+  --text:        #1a1814;
+  --text-dim:    #6b6560;
+  --text-muted:  #9c9590;
+  --text-bright: #0f0e0c;
+  --accent:      #b45309;
+  --accent-dim:  rgba(180, 83, 9, 0.08);
+  --info-border: #2563eb;
+  --info-bg:     rgba(37, 99, 235, 0.06);
+  --warn-border: #d97706;
+  --warn-bg:     rgba(217, 119, 6, 0.07);
+  --tip-border:  #059669;
+  --tip-bg:      rgba(5, 150, 105, 0.06);
+}
+
+/* ============================================================
+   RESET + BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================================
+   SITE HEADER (minimal top bar)
+   ============================================================ */
+.site-header {
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  position: sticky; top: 0; z-index: 100;
+}
+
+.site-header__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.site-logo {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-bright);
+  text-decoration: none;
+  letter-spacing: -0.3px;
+}
+
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-nav a {
+  font-size: 13px;
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: color var(--t);
+}
+
+.header-nav a:hover { color: var(--text); }
+
+/* Theme toggle button */
+.theme-btn {
+  width: 32px; height: 32px;
+  display: grid; place-items: center;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: background var(--t), color var(--t);
+}
+
+.theme-btn:hover { background: var(--surface2); color: var(--text); }
+.theme-btn svg { width: 15px; height: 15px; }
+
+/* ============================================================
+   PAGE LAYOUT — TOC left | content center | share right
+   ============================================================ */
+.page-layout {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: grid;
+  /* TOC | content | share */
+  grid-template-columns: var(--toc-width) 1fr var(--share-width);
+  grid-template-areas: "toc content share";
+  gap: 0 48px;
+  position: relative;
+}
+
+/* ============================================================
+   TABLE OF CONTENTS — fixed sidebar desktop
+   ============================================================ */
+.toc {
+  grid-area: toc;
+  padding-top: 40px;
+}
+
+.toc__sticky {
+  position: sticky;
+  top: 72px;    /* clears topbar */
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+}
+
+.toc__title {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.toc__list {
+  list-style: none;
+}
+
+.toc__item { margin-bottom: 2px; }
+
+.toc__link {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--text-dim);
+  text-decoration: none;
+  padding: 4px 0 4px 10px;
+  border-left: 2px solid transparent;
+  line-height: 1.4;
+  transition: color var(--t), border-color var(--t);
+}
+
+.toc__link:hover { color: var(--text); }
+
+/* Scrollspy active state — set by IntersectionObserver */
+.toc__link.active {
+  color: var(--accent);
+  border-left-color: var(--accent);
+  font-weight: 500;
+}
+
+.toc__item--h3 .toc__link {
+  padding-left: 20px;
+  font-size: 11px;
+}
+
+/* ============================================================
+   MOBILE TOC — sticky horizontal bar
+   ============================================================ */
+.toc-mobile {
+  display: none;
+  position: sticky;
+  top: 56px;
+  z-index: 90;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  white-space: nowrap;
+  gap: 8px;
+}
+
+.toc-mobile a {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--text-dim);
+  text-decoration: none;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  transition: background var(--t), color var(--t), border-color var(--t);
+  white-space: nowrap;
+}
+
+.toc-mobile a:hover { background: var(--surface2); color: var(--text); }
+.toc-mobile a.active { background: var(--accent-dim); color: var(--accent); border-color: var(--accent); }
+
+/* ============================================================
+   ARTICLE CONTENT — main prose column
+   ============================================================ */
+.article-content {
+  grid-area: content;
+  padding-top: 40px;
+  padding-bottom: 80px;
+  min-width: 0;
+}
+
+/* ============================================================
+   ARTICLE HERO — left-aligned, NOT centered
+   ============================================================ */
+.hero {
+  margin-bottom: 48px;
+}
+
+/* Category tag — small caps above heading */
+.hero__category {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+
+/* Big serif heading — clamp for fluid size, negative tracking */
+.hero__title {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--text-bright);
+  max-width: 20ch;   /* force natural breaks on long titles */
+  margin-bottom: 20px;
+  text-wrap: balance;
+}
+
+/* Reading time + date under title */
+.hero__meta {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.hero__meta-sep { color: var(--border-mid); }
+
+/* Author byline with circular avatar */
+.byline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.byline__avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), #7c3aed);
+  display: grid; place-items: center;
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.byline__name {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-bright);
+}
+
+.byline__role {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+/* ============================================================
+   HERO IMAGE
+   ============================================================ */
+.hero-image {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 48px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.hero-image__placeholder {
+  width: 100%;
+  aspect-ratio: 16/7;
+  background: var(--surface2);
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 13px;
+}
+
+/* ============================================================
+   PROSE — all reading content
+   ============================================================ */
+.prose {
+  max-width: var(--prose-max);
+  font-size: 1.0625rem;    /* 17px */
+  line-height: 1.75;
+  text-wrap: pretty;       /* better widow/orphan handling */
+}
+
+.prose p { margin-bottom: 1.5em; }
+
+/* ---- Drop cap on first paragraph ---- */
+/* Floated ::first-letter at 3.5em — the editorial marker */
+.prose .dropcap::first-letter {
+  float: left;
+  font-family: var(--font-serif);
+  font-size: 3.5em;
+  font-weight: 700;
+  line-height: 0.8;
+  padding-right: 10px;
+  padding-top: 4px;
+  color: var(--accent);
+}
+
+/* ---- Headings ---- */
+.prose h2 {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-bright);
+  margin-top: 2.5em;
+  margin-bottom: 0.75em;
+  padding-top: 1.5em;
+  border-top: 1px solid var(--border);   /* section divider */
+  line-height: 1.25;
+}
+
+.prose h3 {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-bright);
+  margin-top: 2em;
+  margin-bottom: 0.6em;
+  line-height: 1.3;
+}
+
+/* ---- Pull quote ---- */
+/* Key insight pulled for emphasis. Use sparingly — max 2 per article. */
+.pullquote {
+  margin: 2.5em 0;
+  padding-left: 20px;
+  border-left: 3px solid var(--accent);
+}
+
+.pullquote p {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--text-bright);
+  margin: 0;
+}
+
+/* ---- Standard blockquote (different from pull quote) ---- */
+/* Blockquote: attribution-style, indented, lighter rule */
+.prose blockquote {
+  margin: 1.75em 0;
+  padding: 0 0 0 18px;
+  border-left: 2px solid var(--border-mid);
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+.prose blockquote cite {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.875rem;
+  font-style: normal;
+  color: var(--text-muted);
+}
+
+/* ---- Lists ---- */
+.prose ul, .prose ol {
+  padding-left: 1.6em;
+  margin-bottom: 1.5em;
+}
+
+.prose li { margin-bottom: 0.4em; }
+
+.prose li::marker { color: var(--accent); }
+
+/* ---- Links ---- */
+.prose a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: opacity var(--t);
+}
+
+.prose a:hover { opacity: 0.75; }
+
+/* ---- Inline code ---- */
+.prose code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--surface2);
+  color: var(--accent);
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+}
+
+/* ---- Code block ---- */
+/* Syntax-highlighted look without a library */
+.prose pre {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px 20px;
+  overflow-x: auto;
+  margin-bottom: 1.5em;
+  -webkit-overflow-scrolling: touch;
+}
+
+.prose pre code {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--text);
+  background: none;
+  border: none;
+  padding: 0;
+  border-radius: 0;
+}
+
+/* Pseudo syntax colors — keyword/string/comment */
+.prose .tok-kw    { color: #7c3aed; }
+.prose .tok-str   { color: #059669; }
+.prose .tok-cmt   { color: var(--text-muted); font-style: italic; }
+.prose .tok-fn    { color: var(--accent); }
+.prose .tok-num   { color: #2563eb; }
+
+html.dark .tok-kw  { color: #a78bfa; }
+html.dark .tok-str { color: #34d399; }
+html.dark .tok-fn  { color: var(--accent); }
+html.dark .tok-num { color: #60a5fa; }
+
+@media (prefers-color-scheme: dark) {
+  .tok-kw  { color: #a78bfa; }
+  .tok-str { color: #34d399; }
+  .tok-fn  { color: var(--accent); }
+  .tok-num { color: #60a5fa; }
+}
+
+/* ---- Figure + caption ---- */
+.prose figure {
+  margin: 2em 0;
+}
+
+.prose figcaption {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-top: 8px;
+  line-height: 1.4;
+}
+
+/* Image placeholder */
+.img-placeholder {
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: var(--surface2);
+  border-radius: 4px;
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  border: 1px solid var(--border);
+}
+
+/* ---- Callout boxes ---- */
+.callout {
+  padding: 14px 18px;
+  border-radius: 6px;
+  border-left: 4px solid;
+  margin: 1.75em 0;
+  font-size: 0.9375rem;
+}
+
+.callout__title {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+
+.callout--info  { background: var(--info-bg);  border-color: var(--info-border); }
+.callout--info .callout__title  { color: var(--info-border); }
+
+.callout--warn  { background: var(--warn-bg);  border-color: var(--warn-border); }
+.callout--warn .callout__title  { color: var(--warn-border); }
+
+.callout--tip   { background: var(--tip-bg);   border-color: var(--tip-border); }
+.callout--tip .callout__title   { color: var(--tip-border); }
+
+.callout p { margin: 0; }
+.callout ul, .callout ol { padding-left: 1.4em; margin: 8px 0 0 0; }
+
+/* ---- Section divider ---- */
+.prose hr {
+  border: none;
+  height: 1px;
+  background: var(--border);
+  margin: 3em 0;
+}
+
+/* Ornamental divider */
+.ornament {
+  text-align: center;
+  margin: 3em 0;
+  color: var(--text-muted);
+  font-size: 18px;
+  letter-spacing: 14px;
+  padding-left: 14px;   /* compensate for letter-spacing on last char */
+}
+
+/* ============================================================
+   SOCIAL SHARE BAR — sidebar desktop, fixed bottom mobile
+   ============================================================ */
+.share {
+  grid-area: share;
+  padding-top: 40px;
+}
+
+.share__sticky {
+  position: sticky;
+  top: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.share-btn {
+  width: 36px; height: 36px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-dim);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background var(--t), color var(--t), border-color var(--t);
+}
+
+.share-btn:hover {
+  background: var(--accent-dim);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.share-btn svg { width: 15px; height: 15px; }
+
+/* ============================================================
+   ARTICLE FOOTER — author bio + related articles + newsletter
+   ============================================================ */
+.article-footer {
+  border-top: 2px solid var(--border-mid);
+  padding-top: 48px;
+  padding-bottom: 64px;
+  max-width: var(--prose-max);
+}
+
+/* Author bio card */
+.author-bio {
+  display: flex;
+  gap: 20px;
+  padding: 28px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 48px;
+}
+
+.author-bio__avatar {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), #7c3aed);
+  display: grid; place-items: center;
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 20px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.author-bio__name {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-bright);
+  margin-bottom: 4px;
+}
+
+.author-bio__desc {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+/* Related articles grid */
+.related-heading {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-bright);
+  margin-bottom: 20px;
+}
+
+.related-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 48px;
+}
+
+.related-card {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  text-decoration: none;
+  display: block;
+  transition: border-color var(--t);
+}
+
+.related-card:hover { border-color: var(--accent); }
+
+.related-card__img {
+  width: 100%; aspect-ratio: 16/9;
+  background: var(--surface2);
+  display: grid; place-items: center;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 11px;
+}
+
+.related-card__body { padding: 14px; }
+
+.related-card__cat {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+
+.related-card__title {
+  font-family: var(--font-serif);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-bright);
+  line-height: 1.35;
+}
+
+/* Newsletter signup */
+.newsletter {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 28px;
+}
+
+.newsletter__title {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-bright);
+  margin-bottom: 6px;
+}
+
+.newsletter__desc {
+  font-size: 0.875rem;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+}
+
+.newsletter__form {
+  display: flex;
+  gap: 8px;
+}
+
+.newsletter__input {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 9px 14px;
+  font-size: 14px;
+  color: var(--text);
+  font-family: var(--font-sans);
+  outline: none;
+  transition: border-color var(--t);
+}
+
+.newsletter__input:focus { border-color: var(--accent); }
+.newsletter__input::placeholder { color: var(--text-muted); }
+
+.newsletter__btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: opacity var(--t);
+  white-space: nowrap;
+}
+
+.newsletter__btn:hover { opacity: 0.85; }
+
+/* ============================================================
+   MOBILE SHARE BAR — fixed bottom strip
+   ============================================================ */
+.share-mobile {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 10px 20px;
+  gap: 12px;
+  z-index: 200;
+  justify-content: center;
+}
+
+.share-mobile .share-btn {
+  border-radius: 6px;
+  width: auto;
+  padding: 0 14px;
+  height: 36px;
+  gap: 6px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1024px) {
+  .page-layout {
+    grid-template-columns: 1fr;
+    grid-template-areas: "content";
+    padding: 0 20px;
+  }
+
+  /* TOC sidebar hidden; show mobile bar */
+  .toc, .share { display: none; }
+  .toc-mobile  { display: flex; }
+  .share-mobile { display: flex; }
+
+  /* Extra bottom padding so fixed share bar doesn't cover content */
+  .article-content { padding-bottom: 80px; }
+  .article-footer   { padding-bottom: 100px; }
+}
+
+@media (max-width: 640px) {
+  .hero__title { font-size: clamp(1.75rem, 6vw, 2.5rem); }
+  .related-grid { grid-template-columns: 1fr; }
+  .newsletter__form { flex-direction: column; }
+  .newsletter__btn { width: 100%; }
+  body { font-size: 15px; }
+}
+
+/* ============================================================
+   PRINT STYLES — clean, black on white, no sidebars
+   ============================================================ */
+@media print {
+  :root {
+    --bg: #fff;
+    --surface: #fff;
+    --text: #000;
+    --text-dim: #444;
+    --text-bright: #000;
+    --accent: #000;
+    --border: #ccc;
+  }
+
+  .site-header,
+  .toc, .toc-mobile, .share, .share-mobile,
+  .related-grid, .newsletter,
+  .hero__category { display: none !important; }
+
+  .page-layout {
+    display: block;
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .prose { max-width: 100%; }
+  .hero__title { font-size: 28pt; }
+
+  /* Avoid page breaks inside callouts or figures */
+  .callout, figure, .pullquote { break-inside: avoid; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- =========================================================
+     MOBILE TOC BAR (< 1024px, sticky below topbar)
+     ========================================================= -->
+<nav class="toc-mobile" id="tocMobile" aria-label="Article sections">
+  <a href="#intro" class="active">Introduction</a>
+  <a href="#first-principles">First Principles</a>
+  <a href="#evidence">Evidence</a>
+  <a href="#counterargument">Counterargument</a>
+  <a href="#conclusion">Conclusion</a>
+</nav>
+
+<!-- =========================================================
+     SITE HEADER
+     ========================================================= -->
+<header class="site-header">
+  <div class="site-header__inner">
+    <a href="#" class="site-logo">The Dispatch</a>
+
+    <nav class="header-nav" aria-label="Site navigation">
+      <a href="#">Essays</a>
+      <a href="#">Archive</a>
+      <a href="#">About</a>
+      <button class="theme-btn" id="themeBtn" aria-label="Toggle dark mode">
+        <!-- Moon icon (shows in light mode) -->
+        <svg id="ico-moon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+          <path d="M12 10.5A5 5 0 016.5 5c0-1 .2-1.9.6-2.7A6.5 6.5 0 1013.7 9.5 5 5 0 0112 10.5z"/>
+        </svg>
+        <!-- Sun icon (shows in dark mode, hidden by default) -->
+        <svg id="ico-sun" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="display:none" aria-hidden="true">
+          <circle cx="8" cy="8" r="3"/>
+          <line x1="8" y1="1.5" x2="8" y2="3"/><line x1="8" y1="13" x2="8" y2="14.5"/>
+          <line x1="1.5" y1="8" x2="3" y2="8"/><line x1="13" y1="8" x2="14.5" y2="8"/>
+          <line x1="3.4" y1="3.4" x2="4.5" y2="4.5"/><line x1="11.5" y1="11.5" x2="12.6" y2="12.6"/>
+          <line x1="12.6" y1="3.4" x2="11.5" y2="4.5"/><line x1="4.5" y1="11.5" x2="3.4" y2="12.6"/>
+        </svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<!-- =========================================================
+     PAGE LAYOUT
+     ========================================================= -->
+<div class="page-layout">
+
+  <!-- ---- TOC SIDEBAR ---- -->
+  <aside class="toc" aria-label="Table of contents">
+    <nav class="toc__sticky">
+      <p class="toc__title">Contents</p>
+      <ul class="toc__list" id="tocList">
+        <li class="toc__item">
+          <a href="#intro"           class="toc__link active">Introduction</a>
+        </li>
+        <li class="toc__item">
+          <a href="#first-principles" class="toc__link">First Principles</a>
+        </li>
+        <li class="toc__item toc__item--h3">
+          <a href="#reversible"      class="toc__link">Reversible vs. Irreversible</a>
+        </li>
+        <li class="toc__item toc__item--h3">
+          <a href="#latency"         class="toc__link">The Cost of Latency</a>
+        </li>
+        <li class="toc__item">
+          <a href="#evidence"        class="toc__link">Evidence</a>
+        </li>
+        <li class="toc__item">
+          <a href="#counterargument" class="toc__link">The Counterargument</a>
+        </li>
+        <li class="toc__item">
+          <a href="#conclusion"      class="toc__link">Conclusion</a>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- ---- ARTICLE ---- -->
+  <article class="article-content">
+
+    <!-- HERO -->
+    <header class="hero">
+      <span class="hero__category">Decision-Making</span>
+
+      <h1 class="hero__title" id="intro">
+        The Architecture of Decisions
+      </h1>
+
+      <div class="hero__meta">
+        <time datetime="2026-04-08">April 8, 2026</time>
+        <span class="hero__meta-sep" aria-hidden="true">·</span>
+        <span>12 min read</span>
+        <span class="hero__meta-sep" aria-hidden="true">·</span>
+        <span>Strategy</span>
+      </div>
+
+      <div class="byline">
+        <div class="byline__avatar" aria-hidden="true">NA</div>
+        <div>
+          <div class="byline__name">Nicholas Ashkar</div>
+          <div class="byline__role">Founder, Cirvgreen</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero image with caption -->
+    <figure class="hero-image">
+      <div class="hero-image__placeholder" role="img" aria-label="Placeholder for hero image">
+        hero image — 16:7 ratio
+      </div>
+    </figure>
+
+    <!-- PROSE BODY -->
+    <div class="prose">
+
+      <!-- Drop cap on first paragraph -->
+      <p class="dropcap" id="intro-body">
+        Every consequential choice exists on a spectrum between fully reversible and completely permanent.
+        The builders who move fastest aren't those who decide quickest — they're those who correctly classify
+        which decisions belong to each end of that spectrum, and then treat them accordingly.
+      </p>
+
+      <p>
+        This framework changed how I think about organisational pace. A company that applies the same deliberation
+        process to choosing a button colour as it does to signing a ten-year lease isn't being rigorous —
+        it's being inefficient in a way that compounds over time until speed itself becomes impossible.
+      </p>
+
+      <!-- Callout: info -->
+      <div class="callout callout--info" role="note">
+        <div class="callout__title">Key concept</div>
+        <p>
+          Jeff Bezos famously separated "one-way door" (irreversible) decisions from "two-way door" (reversible) ones.
+          One-way doors require senior judgment and slow deliberation. Two-way doors should be delegated and made quickly.
+        </p>
+      </div>
+
+      <h2 id="first-principles">First Principles</h2>
+
+      <p>
+        Start with what you can actually observe. Before classifying a decision, ask two questions:
+        <em>How much does reversing this cost, and by when must you decide?</em>
+        These two variables — reversal cost and time pressure — map almost every decision onto a 2×2 matrix
+        that tells you how much process to apply.
+      </p>
+
+      <p>
+        Most organisations, when they teach decision-making, skip this classification step entirely.
+        They go straight to frameworks like pros/cons lists or multi-criteria analysis. The result:
+        overthought low-stakes calls, and underthought high-stakes ones.
+      </p>
+
+      <!-- Pull quote — large italic, border-left accent -->
+      <aside class="pullquote">
+        <p>"The best decisions I've made were the ones where I correctly identified what I couldn't undo,
+        and spent my energy there rather than everywhere."</p>
+      </aside>
+
+      <h3 id="reversible">Reversible vs. Irreversible</h3>
+
+      <p>
+        Reversibility is not binary. It's a gradient. A decision to try a new marketing channel can be reversed
+        in three weeks at the cost of one sprint. A decision to build proprietary infrastructure can take
+        three years and $2M to reverse. Both feel like "just picking a direction" in the moment.
+      </p>
+
+      <!-- Standard blockquote — different treatment from pull quote -->
+      <blockquote>
+        <p>The definition of wisdom is knowing what you don't know, and the definition of strategic wisdom
+           is knowing which of those unknowns matter.</p>
+        <cite>— Nassim Nicholas Taleb, paraphrased</cite>
+      </blockquote>
+
+      <p>
+        A useful heuristic: if reversing this decision requires <code>n &gt; 3</code> teams, external contracts,
+        or architectural migrations, classify it as irreversible and treat it accordingly.
+        If one person can undo it in an afternoon, move fast.
+      </p>
+
+      <h3 id="latency">The Cost of Latency</h3>
+
+      <p>
+        Decision latency — the time between when a decision should be made and when it actually is — carries
+        a compounding cost that most organisations fail to account for. It's invisible, because the cost
+        appears as "work that didn't happen" rather than money spent.
+      </p>
+
+      <!-- Code block with pseudo-syntax highlighting -->
+      <pre><code><span class="tok-cmt">// Decision latency model — cost compounds per day</span>
+<span class="tok-kw">function</span> <span class="tok-fn">latencyCost</span>(
+  dailyOpportunityCost: <span class="tok-kw">number</span>,
+  daysDelayed: <span class="tok-num">number</span>,
+  compoundRate: <span class="tok-num">number</span> = <span class="tok-num">0.03</span>
+) {
+  <span class="tok-kw">return</span> dailyOpportunityCost
+    * (((<span class="tok-num">1</span> + compoundRate) ** daysDelayed - <span class="tok-num">1</span>) / compoundRate);
+}
+
+<span class="tok-cmt">// $500/day decision, delayed 30 days, 3% daily compound:</span>
+<span class="tok-fn">latencyCost</span>(<span class="tok-num">500</span>, <span class="tok-num">30</span>); <span class="tok-cmt">// → ~$23,700</span></code></pre>
+
+      <h2 id="evidence">Evidence</h2>
+
+      <p>
+        Across 200 product decisions I tracked over 18 months at Cirvgreen, a pattern emerged:
+        the decisions that took longest to make were not the ones that were most consequential —
+        they were the ones where the <em>classification</em> was unclear at the start.
+      </p>
+
+      <!-- Callout: warning -->
+      <div class="callout callout--warn" role="note">
+        <div class="callout__title">Warning</div>
+        <p>
+          Beware "fake irreversibility" — decisions that feel permanent because they're large or expensive,
+          but are actually reversible with enough will. These consume the most senior attention for the least return.
+        </p>
+      </div>
+
+      <!-- Figure with caption -->
+      <figure>
+        <div class="img-placeholder" role="img" aria-label="Chart: decision latency vs. outcome quality">
+          chart: decision latency vs. outcome quality — 16:9
+        </div>
+        <figcaption>
+          Fig. 1 — Decision latency plotted against outcome quality for 200 product decisions (2024–2025).
+          Note the negative correlation that steepens after day 14.
+        </figcaption>
+      </figure>
+
+      <p>
+        The 15 decisions that took more than 3 weeks had an average outcome rating of 3.1/5.
+        The 15 that were made in under 48 hours rated 4.2/5 on average.
+        The confounding variable — both groups had similar stakes — was almost entirely about clarity
+        of classification at the outset.
+      </p>
+
+      <!-- Unordered list -->
+      <p>The three most common causes of mis-classification:</p>
+      <ul>
+        <li>Status quo bias — treating change as inherently riskier than inaction</li>
+        <li>Sunk cost conflation — confusing "we've invested a lot" with "this is now irreversible"</li>
+        <li>Scope creep in deliberation — expanding what one decision needs to solve</li>
+      </ul>
+
+      <hr>
+
+      <h2 id="counterargument">The Counterargument</h2>
+
+      <p>
+        A reasonable objection: doesn't this framework just encourage speed at the cost of quality?
+        Doesn't moving fast on two-way-door decisions increase the chance of compounding errors —
+        where ten fast wrong decisions create a mess that's harder to reverse than one slow right one?
+      </p>
+
+      <!-- Callout: tip -->
+      <div class="callout callout--tip" role="note">
+        <div class="callout__title">Tip</div>
+        <p>
+          Counteract compounding errors with explicit "decision logs" — short notes on what you decided,
+          why, and what would change your mind. They take 5 minutes and make reversal 10x faster.
+        </p>
+      </div>
+
+      <!-- Ordered list -->
+      <p>The counter-counterargument has three parts:</p>
+      <ol>
+        <li>Error detection is faster in rapid iteration — feedback loops are tighter</li>
+        <li>The cost of mis-classifying a two-way-door decision as one-way is usually higher than the converse</li>
+        <li>Decision logs (see above) make reversal explicit and cheap</li>
+      </ol>
+
+      <div class="ornament" aria-hidden="true">✦ ✦ ✦</div>
+
+      <h2 id="conclusion">Conclusion</h2>
+
+      <p>
+        Good decision architecture is not about making more decisions faster.
+        It is about applying the right amount of deliberation to the right class of problem.
+        The tool is classification. Everything else — speed, quality, delegation — follows from getting that right.
+      </p>
+
+      <p>
+        If you take one thing from this: before your next important decision, stop and spend five minutes
+        answering "what would it take to reverse this, and does that cost justify slowing down?"
+        That question alone will buy back more time than most productivity frameworks combined.
+      </p>
+
+    </div><!-- /prose -->
+
+    <!-- ARTICLE FOOTER -->
+    <footer class="article-footer">
+
+      <!-- Author bio -->
+      <div class="author-bio">
+        <div class="author-bio__avatar" aria-hidden="true">NA</div>
+        <div>
+          <p class="author-bio__name">Nicholas Ashkar</p>
+          <p class="author-bio__desc">
+            Founder of Cirvgreen — building minimal, scalable products in the UAE/GCC.
+            Writing about product strategy, decision-making, and building while working full-time.
+          </p>
+        </div>
+      </div>
+
+      <!-- Related articles grid -->
+      <h2 class="related-heading">More from The Dispatch</h2>
+
+      <div class="related-grid">
+        <a href="#" class="related-card">
+          <div class="related-card__img" role="img" aria-label="Article thumbnail">thumbnail</div>
+          <div class="related-card__body">
+            <div class="related-card__cat">Strategy</div>
+            <div class="related-card__title">Why Constraints Produce Better Products</div>
+          </div>
+        </a>
+        <a href="#" class="related-card">
+          <div class="related-card__img" role="img" aria-label="Article thumbnail">thumbnail</div>
+          <div class="related-card__body">
+            <div class="related-card__cat">Operations</div>
+            <div class="related-card__title">The Systems That Let You Work Full-Time and Build</div>
+          </div>
+        </a>
+        <a href="#" class="related-card">
+          <div class="related-card__img" role="img" aria-label="Article thumbnail">thumbnail</div>
+          <div class="related-card__body">
+            <div class="related-card__cat">Product</div>
+            <div class="related-card__title">Minimum Viable Everything: Rethinking the MVP</div>
+          </div>
+        </a>
+      </div>
+
+      <!-- Newsletter signup -->
+      <div class="newsletter">
+        <p class="newsletter__title">Get the next essay in your inbox</p>
+        <p class="newsletter__desc">One essay per week on strategy, building, and systems thinking. No noise.</p>
+        <form class="newsletter__form" onsubmit="return false">
+          <input class="newsletter__input" type="email" placeholder="your@email.com" aria-label="Email address">
+          <button class="newsletter__btn" type="submit">Subscribe</button>
+        </form>
+      </div>
+
+    </footer>
+
+  </article><!-- /article-content -->
+
+  <!-- ---- SHARE SIDEBAR (desktop) ---- -->
+  <aside class="share" aria-label="Share article">
+    <div class="share__sticky">
+      <a href="#" class="share-btn" aria-label="Share on X / Twitter">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <path d="M12.6 2H15l-4.6 5.3L15.5 14H11l-3-4-3.5 4H2l5-5.7L2 2h4.5l2.7 3.7L12.6 2z"/>
+        </svg>
+      </a>
+      <a href="#" class="share-btn" aria-label="Share on LinkedIn">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <path d="M2.5 5.5h2v8h-2zM3.5 4.5a1.2 1.2 0 110-2.4 1.2 1.2 0 010 2.4zM6 5.5h2v1s.8-1.2 2.5-1.2c1.8 0 3 1.2 3 3.5v4.7h-2V9.3c0-1-.4-1.8-1.5-1.8-1 0-1.5.7-1.5 1.8v4.2H6V5.5z"/>
+        </svg>
+      </a>
+      <a href="#" class="share-btn" aria-label="Copy link">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+          <path d="M6 10l-2.5 2.5a2.5 2.5 0 003.5 3.5L10 13"/>
+          <path d="M10 6l2.5-2.5a2.5 2.5 0 00-3.5-3.5L6 3"/>
+          <line x1="6" y1="10" x2="10" y2="6"/>
+        </svg>
+      </a>
+    </div>
+  </aside>
+
+</div><!-- /page-layout -->
+
+<!-- Mobile share bar (< 1024px, fixed bottom) -->
+<div class="share-mobile" role="complementary" aria-label="Share article">
+  <a href="#" class="share-btn" aria-label="Share on X">
+    <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" width="14" height="14">
+      <path d="M12.6 2H15l-4.6 5.3L15.5 14H11l-3-4-3.5 4H2l5-5.7L2 2h4.5l2.7 3.7L12.6 2z"/>
+    </svg>
+    X
+  </a>
+  <a href="#" class="share-btn" aria-label="Share on LinkedIn">
+    <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" width="14" height="14">
+      <path d="M2.5 5.5h2v8h-2zM3.5 4.5a1.2 1.2 0 110-2.4 1.2 1.2 0 010 2.4zM6 5.5h2v1s.8-1.2 2.5-1.2c1.8 0 3 1.2 3 3.5v4.7h-2V9.3c0-1-.4-1.8-1.5-1.8-1 0-1.5.7-1.5 1.8v4.2H6V5.5z"/>
+    </svg>
+    LinkedIn
+  </a>
+  <a href="#" class="share-btn" aria-label="Copy link">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true" width="14" height="14">
+      <path d="M6 10l-2.5 2.5a2.5 2.5 0 003.5 3.5L10 13"/>
+      <path d="M10 6l2.5-2.5a2.5 2.5 0 00-3.5-3.5L6 3"/>
+      <line x1="6" y1="10" x2="10" y2="6"/>
+    </svg>
+    Copy
+  </a>
+</div>
+
+<!-- =========================================================
+     SCRIPTS
+     ========================================================= -->
+<script>
+(function () {
+  'use strict';
+
+  // ---- Theme toggle ----
+  const btn     = document.getElementById('themeBtn');
+  const icoMoon = document.getElementById('ico-moon');
+  const icoSun  = document.getElementById('ico-sun');
+
+  // Detect current effective theme (accounts for prefers-color-scheme)
+  function isDark() {
+    return document.documentElement.classList.contains('dark') ||
+      (!document.documentElement.classList.contains('light') &&
+       window.matchMedia('(prefers-color-scheme: dark)').matches);
+  }
+
+  function syncIcons() {
+    const dark = isDark();
+    icoMoon.style.display = dark  ? 'none' : '';
+    icoSun.style.display  = dark  ? '' : 'none';
+  }
+
+  syncIcons();
+
+  btn.addEventListener('click', function () {
+    const dark = isDark();
+    document.documentElement.classList.toggle('dark', !dark);
+    document.documentElement.classList.toggle('light', dark);
+    syncIcons();
+  });
+
+  // ---- TOC Scrollspy (IntersectionObserver) ----
+  // Highlights the TOC link for the section currently in view.
+  const headings = Array.from(
+    document.querySelectorAll('.prose h2[id], .prose h3[id], article header[id]')
+  );
+
+  const tocLinks     = Array.from(document.querySelectorAll('#tocList .toc__link'));
+  const mobileTocLinks = Array.from(document.querySelectorAll('#tocMobile a'));
+
+  function setActive(id) {
+    // Desktop TOC
+    tocLinks.forEach(function (link) {
+      link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+    });
+    // Mobile TOC
+    mobileTocLinks.forEach(function (link) {
+      link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+    });
+  }
+
+  // Use IntersectionObserver — fire when heading hits top 25% of viewport
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            setActive(entry.target.id);
+          }
+        });
+      },
+      { rootMargin: '0px 0px -75% 0px', threshold: 0 }
+    );
+
+    headings.forEach(function (h) { observer.observe(h); });
+  }
+
+  // ---- Smooth scroll for TOC links (fallback for older browsers) ----
+  document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
+    anchor.addEventListener('click', function (e) {
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+}());
+</script>
+
+</body>
+</html>

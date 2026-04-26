@@ -1,0 +1,1852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hero Section Reference — 6 Aesthetic Variants</title>
+<!--
+  AAA Design Reference Template: Hero Sections
+  6 hero variants, each with a distinctly different aesthetic.
+  Agents: study each variant to understand how palette, typography,
+  layout, and spacing TOGETHER create an aesthetic identity.
+
+  Variants:
+  1. Split Hero         — Warm Signal       (Terracotta + Sage)
+  2. Centered Minimal   — Editorial Minimal (Serif, bone, breathing space)
+  3. Full-Bleed Image   — Dark Luxury       (Gradient scrim, white text, serif)
+  4. Asymmetric + Stats — Blueprint         (Dot grid, monospace numbers, rotation)
+  5. Dark Premium Noise — Soft Premium      (Near-black, pill CTAs, Geist)
+  6. Bento Hero         — Terminal Mono     (Green/cyan on near-black, borders)
+
+  Global patterns demonstrated:
+  - CSS custom properties scoped per variant — full palette isolation
+  - prefers-reduced-motion respected in every animation
+  - prefers-color-scheme: every variant has both modes
+  - Semantic HTML: header + nav + main + section structure
+  - Responsive: each variant collapses cleanly at 768px
+  - IntersectionObserver reveals used across all variants
+  - No Inter. No pure black. No centered slop. No neon gradients.
+  - Fonts: Outfit, Playfair Display, Newsreader, Space Grotesk, Geist (system-fallback), Space Mono
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Newsreader:ital,wght@0,300;0,400;1,300;1,400&family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   GLOBAL RESET + UTILITIES
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { -webkit-font-smoothing: antialiased; background: #111; }
+img { display: block; max-width: 100%; }
+
+/* Table of contents nav — top of page */
+.toc-nav {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  padding: 0.6rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem 1.5rem;
+  flex-wrap: wrap;
+}
+
+.toc-nav__label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.3);
+  flex-shrink: 0;
+  margin-right: 0.5rem;
+}
+
+.toc-nav a {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.5);
+  text-decoration: none;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+.toc-nav a:hover { color: rgba(255,255,255,0.9); }
+
+/* Shared reveal animation */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--delay, 0ms);
+}
+.reveal.is-visible { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+}
+
+/* Variant label badge — identifies each section */
+.variant-badge {
+  display: inline-block;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid;
+  margin-bottom: 2rem;
+}
+
+/* ============================================================
+   VARIANT 1: SPLIT HERO — Warm Signal aesthetic
+   Palette: Terracotta (#c2410c) + Sage (#65a30d) on warm bone (#faf7f5)
+   Layout: 60/40 text-left / visual-right
+   Typography: Playfair Display display + Outfit body
+   ============================================================ */
+#v1 {
+  --v1-bg:         #faf7f5;
+  --v1-surface:    #ffffff;
+  --v1-terra:      #c2410c;
+  --v1-terra-dim:  rgba(194,65,12,0.08);
+  --v1-terra-b:    rgba(194,65,12,0.22);
+  --v1-sage:       #65a30d;
+  --v1-sage-dim:   rgba(101,163,13,0.08);
+  --v1-text:       #1c1410;
+  --v1-muted:      #6b5e56;
+  --v1-faint:      #a8998f;
+  --v1-border:     rgba(28,20,16,0.09);
+}
+
+@media (prefers-color-scheme: dark) {
+  #v1 {
+    --v1-bg:       #140f0b;
+    --v1-surface:  #1e1611;
+    --v1-terra:    #ea580c;
+    --v1-terra-dim: rgba(234,88,12,0.12);
+    --v1-terra-b:  rgba(234,88,12,0.28);
+    --v1-sage:     #84cc16;
+    --v1-sage-dim: rgba(132,204,22,0.1);
+    --v1-text:     #f5ede8;
+    --v1-muted:    #a8917f;
+    --v1-faint:    #6b5040;
+    --v1-border:   rgba(245,237,232,0.07);
+  }
+}
+
+#v1 {
+  background: var(--v1-bg);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Radial warm glow — left column atmosphere */
+#v1::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 55%; height: 100%;
+  background: radial-gradient(ellipse at 30% 40%, var(--v1-terra-dim) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.v1__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 4vw;
+  border-bottom: 1px solid var(--v1-border);
+  position: relative;
+}
+
+.v1__logo {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--v1-text);
+  letter-spacing: -0.02em;
+}
+
+.v1__nav-links {
+  display: flex; align-items: center; gap: 1.75rem; list-style: none;
+}
+.v1__nav-links a {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.875rem;
+  color: var(--v1-muted);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.v1__nav-links a:hover { color: var(--v1-text); }
+
+.v1__nav-cta {
+  background: var(--v1-terra);
+  color: #fff !important;
+  padding: 0.45rem 1rem;
+  border-radius: 6px;
+  font-weight: 600 !important;
+  font-size: 0.82rem !important;
+  transition: background 0.2s, transform 0.1s !important;
+}
+.v1__nav-cta:hover { background: #ea580c !important; transform: translateY(-1px) !important; }
+
+.v1__body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  /* Intentional asymmetry: text column gets a touch more */
+  gap: clamp(2rem, 5vw, 6rem);
+  align-items: center;
+  padding: clamp(3rem, 7vw, 6rem) 4vw;
+  position: relative;
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.v1__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--v1-terra);
+  background: var(--v1-terra-dim);
+  border: 1px solid var(--v1-terra-b);
+  padding: 0.28rem 0.75rem;
+  border-radius: 999px;
+  margin-bottom: 1.5rem;
+}
+
+.v1__eyebrow-pulse {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--v1-terra);
+  animation: v1-pulse 2.2s ease-in-out infinite;
+}
+@keyframes v1-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.75); }
+}
+
+.v1__h1 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2.5rem, 5.5vw, 4.25rem);
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  color: var(--v1-text);
+  margin-bottom: 1.25rem;
+}
+.v1__h1 em { font-style: italic; color: var(--v1-terra); }
+
+.v1__body-text {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(1rem, 1.4vw, 1.1rem);
+  color: var(--v1-muted);
+  max-width: 48ch;
+  line-height: 1.7;
+  margin-bottom: 2.25rem;
+}
+
+.v1__actions { display: flex; align-items: center; gap: 0.875rem; flex-wrap: wrap; }
+
+.v1__btn-primary {
+  display: inline-flex; align-items: center; gap: 0.45rem;
+  background: var(--v1-terra); color: #fff;
+  padding: 0.7rem 1.6rem;
+  border-radius: 6px; font-family: 'Outfit', sans-serif;
+  font-weight: 600; font-size: 0.92rem;
+  text-decoration: none; border: none; cursor: pointer;
+  box-shadow: 0 2px 8px rgba(194,65,12,0.28);
+  transition: background 0.2s, transform 0.12s, box-shadow 0.2s;
+}
+.v1__btn-primary:hover {
+  background: #ea580c;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(194,65,12,0.32);
+}
+.v1__btn-primary:active { transform: translateY(0); }
+
+.v1__btn-ghost {
+  display: inline-flex; align-items: center; gap: 0.45rem;
+  color: var(--v1-muted); padding: 0.7rem 1.2rem;
+  border-radius: 6px; font-family: 'Outfit', sans-serif;
+  font-weight: 500; font-size: 0.92rem;
+  text-decoration: none; border: 1px solid var(--v1-border);
+  transition: color 0.2s, border-color 0.2s, transform 0.12s;
+}
+.v1__btn-ghost:hover { color: var(--v1-text); transform: translateY(-1px); }
+
+/* Visual side: floating stats badge + mockup placeholder */
+.v1__visual {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.v1__mockup {
+  background: var(--v1-surface);
+  border: 1px solid var(--v1-border);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 16px 48px rgba(100,60,30,0.13);
+  overflow: hidden;
+}
+
+.v1__mockup-top {
+  background: color-mix(in srgb, var(--v1-bg) 50%, var(--v1-surface) 50%);
+  padding: 0.65rem 1rem;
+  display: flex; align-items: center; gap: 0.35rem;
+  border-bottom: 1px solid var(--v1-border);
+}
+.v1__dot { width: 9px; height: 9px; border-radius: 50%; }
+
+.v1__mockup-content {
+  padding: 1.25rem 1.5rem;
+  display: grid; gap: 1rem;
+}
+
+.v1__chart-row {
+  display: flex; flex-direction: column; gap: 0.35rem;
+}
+.v1__chart-label {
+  display: flex; justify-content: space-between;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem; color: var(--v1-faint);
+}
+.v1__chart-track {
+  height: 6px; background: color-mix(in srgb, var(--v1-bg) 60%, var(--v1-border) 40%);
+  border-radius: 999px; overflow: hidden;
+}
+.v1__chart-fill {
+  height: 100%; border-radius: 999px;
+  background: var(--v1-terra);
+  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.v1__chart-fill--sage { background: var(--v1-sage); }
+
+/* Floating badge — hovers above mockup on the left edge */
+.v1__badge {
+  position: absolute;
+  top: 1.25rem; left: -1.75rem;
+  background: var(--v1-surface);
+  border: 1px solid var(--v1-border);
+  border-radius: 12px;
+  padding: 0.7rem 1rem;
+  box-shadow: 0 4px 14px rgba(100,60,30,0.12);
+  display: flex; align-items: center; gap: 0.65rem;
+  white-space: nowrap;
+  font-family: 'Outfit', sans-serif;
+}
+.v1__badge-dot {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: var(--v1-sage-dim);
+  display: flex; align-items: center; justify-content: center;
+}
+.v1__badge-dot svg { width: 14px; height: 14px; stroke: var(--v1-sage); fill: none; stroke-width: 2; }
+.v1__badge-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem; font-weight: 700;
+  color: var(--v1-text); line-height: 1;
+}
+.v1__badge-sub { font-size: 0.67rem; color: var(--v1-faint); margin-top: 0.1rem; }
+
+@media (max-width: 768px) {
+  .v1__body { grid-template-columns: 1fr; }
+  .v1__visual { display: none; }
+  .v1__nav-links { display: none; }
+}
+
+/* ============================================================
+   VARIANT 2: CENTERED MINIMAL — Editorial Minimal aesthetic
+   Palette: Off-black #111111 on bone #F7F6F3
+   Typography: Newsreader (large serif) — maximum breathing space
+   Key rule: py-32 equivalent. Ultra-subtle. Single CTA only.
+   ============================================================ */
+#v2 {
+  --v2-bg:       #F7F6F3;
+  --v2-text:     #111111;
+  --v2-muted:    #6b6b6b;
+  --v2-faint:    #b0b0b0;
+  --v2-border:   rgba(17,17,17,0.09);
+  --v2-accent:   #111111;
+}
+
+@media (prefers-color-scheme: dark) {
+  #v2 {
+    --v2-bg:     #111111;
+    --v2-text:   #F2F0EB;
+    --v2-muted:  #8a8a8a;
+    --v2-faint:  #4a4a4a;
+    --v2-border: rgba(242,240,235,0.08);
+    --v2-accent: #F2F0EB;
+  }
+}
+
+#v2 {
+  background: var(--v2-bg);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.v2__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 5vw;
+  border-bottom: 1px solid var(--v2-border);
+}
+
+.v2__logo {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 400;
+  color: var(--v2-text);
+  letter-spacing: 0.01em;
+}
+
+.v2__nav-links {
+  display: flex; align-items: center; gap: 2.25rem; list-style: none;
+}
+.v2__nav-links a {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 0.875rem;
+  color: var(--v2-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.v2__nav-links a:hover { color: var(--v2-text); }
+
+.v2__hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* Breathing space — this IS the design */
+  padding: clamp(5rem, 12vw, 9rem) 5vw;
+  text-align: center;
+}
+
+.v2__issue {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--v2-faint);
+  letter-spacing: 0.04em;
+  margin-bottom: 2.5rem;
+  /* Small decorative rule above */
+  padding-top: 1rem;
+  border-top: 1px solid var(--v2-border);
+}
+
+/* The heading IS the page — enormous, refined */
+.v2__h1 {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: clamp(2.75rem, 7vw, 6rem);
+  font-weight: 300;
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  color: var(--v2-text);
+  max-width: 18ch;
+  margin-inline: auto;
+  margin-bottom: 2rem;
+}
+
+/* Italic drop for the second line — editorial touch */
+.v2__h1 em {
+  font-style: italic;
+  font-weight: 300;
+}
+
+.v2__sub {
+  font-family: 'Newsreader', serif;
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+  font-weight: 300;
+  color: var(--v2-muted);
+  max-width: 40ch;
+  line-height: 1.75;
+  margin-inline: auto;
+  margin-bottom: 3rem;
+}
+
+/* Single CTA — ghost style, no visual noise */
+.v2__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Newsreader', serif;
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--v2-text);
+  text-decoration: none;
+  border-bottom: 1px solid var(--v2-text);
+  padding-bottom: 0.15rem;
+  transition: opacity 0.2s, letter-spacing 0.3s;
+}
+.v2__cta:hover { opacity: 0.6; letter-spacing: 0.03em; }
+
+/* Ultra-subtle drop shadow on the heading — only way to see the elevation */
+.v2__h1 { text-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+
+.v2__meta {
+  margin-top: 4rem;
+  font-family: 'Newsreader', serif;
+  font-size: 0.75rem;
+  color: var(--v2-faint);
+  letter-spacing: 0.05em;
+}
+
+@media (max-width: 768px) {
+  .v2__nav-links { display: none; }
+  .v2__h1 { font-size: clamp(2.25rem, 9vw, 4rem); }
+}
+
+/* ============================================================
+   VARIANT 3: FULL-BLEED IMAGE — Dark Luxury aesthetic
+   Palette: White text on dark gradient-scrim over image
+   Typography: Playfair Display + Newsreader — serif/serif pairing
+   Key: gradient scrim IS the design, not an afterthought
+   ============================================================ */
+#v3 {
+  --v3-text:    #FAFAF8;
+  --v3-muted:   rgba(250,250,248,0.65);
+  --v3-faint:   rgba(250,250,248,0.35);
+  --v3-accent:  #d4a73a;  /* warm gold — luxury accent */
+  --v3-border:  rgba(250,250,248,0.12);
+}
+
+#v3 {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  color: var(--v3-text);
+  overflow: hidden;
+}
+
+/* CSS-only image simulation — dark gradient + subtle noise pattern
+   In production: replace with actual background-image URL */
+#v3::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  /* Layered gradients to simulate a landscape photo with scrim */
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(8,6,4,0.55) 0%,        /* top scrim for nav readability */
+      rgba(8,6,4,0.15) 35%,       /* midpoint — "image visible" zone */
+      rgba(8,6,4,0.75) 75%,       /* lower scrim for text contrast */
+      rgba(8,6,4,0.92) 100%       /* bottom — full coverage */
+    ),
+    /* Simulate a natural landscape texture with radial gradients */
+    radial-gradient(ellipse at 30% 60%, rgba(101,80,50,0.5) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 30%, rgba(60,80,100,0.4) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 80%, rgba(40,60,80,0.6) 0%, transparent 40%);
+  background-color: #1a1510;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Noise overlay — gives the "film grain" luxury texture */
+#v3::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1;
+}
+
+.v3__nav {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.75rem 5vw;
+}
+
+.v3__logo {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--v3-text);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.v3__nav-links {
+  display: flex; align-items: center; gap: 2rem; list-style: none;
+}
+.v3__nav-links a {
+  font-family: 'Newsreader', serif;
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--v3-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.v3__nav-links a:hover { color: var(--v3-text); }
+
+.v3__hero {
+  flex: 1;
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 5rem 5vw 5rem;
+  text-align: center;
+}
+
+.v3__content {
+  max-width: 56rem;
+}
+
+/* Thin gold rule above heading — luxury signature */
+.v3__rule {
+  width: 48px;
+  height: 1px;
+  background: var(--v3-accent);
+  margin: 0 auto 1.75rem;
+}
+
+.v3__kicker {
+  font-family: 'Newsreader', serif;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: var(--v3-accent);
+  letter-spacing: 0.08em;
+  margin-bottom: 1.25rem;
+}
+
+.v3__h1 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2.75rem, 6vw, 5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--v3-text);
+  margin-bottom: 1.5rem;
+}
+
+.v3__sub {
+  font-family: 'Newsreader', serif;
+  font-size: clamp(1rem, 1.4vw, 1.2rem);
+  font-weight: 300;
+  color: var(--v3-muted);
+  max-width: 44ch;
+  line-height: 1.75;
+  margin-inline: auto;
+  margin-bottom: 2.5rem;
+}
+
+.v3__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.v3__btn-primary {
+  font-family: 'Newsreader', serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #1a1510;
+  background: var(--v3-text);
+  padding: 0.8rem 2rem;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.12s;
+}
+.v3__btn-primary:hover { background: var(--v3-accent); transform: translateY(-1px); }
+
+.v3__btn-ghost {
+  font-family: 'Newsreader', serif;
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--v3-muted);
+  border: 1px solid var(--v3-border);
+  padding: 0.8rem 1.75rem;
+  text-decoration: none;
+  transition: color 0.2s, border-color 0.2s;
+}
+.v3__btn-ghost:hover { color: var(--v3-text); border-color: rgba(250,250,248,0.3); }
+
+@media (max-width: 768px) {
+  .v3__nav-links { display: none; }
+  .v3__h1 { font-size: clamp(2.25rem, 8vw, 3.5rem); }
+  .v3__hero { align-items: center; text-align: center; }
+}
+
+/* ============================================================
+   VARIANT 4: ASYMMETRIC + STATS — Blueprint aesthetic
+   Palette: Deep indigo #0f1729 + electric blue accent #3b82f6
+   Layout: Text left 60%, 3 floating stat cards right (with rotation)
+   Background: dot grid pattern
+   Typography: Space Grotesk + Space Mono for numbers
+   ============================================================ */
+#v4 {
+  --v4-bg:      #0f1729;
+  --v4-surface: #162040;
+  --v4-surface2: #1d2b52;
+  --v4-blue:    #3b82f6;
+  --v4-blue-dim: rgba(59,130,246,0.08);
+  --v4-blue-b:  rgba(59,130,246,0.2);
+  --v4-cyan:    #22d3ee;
+  --v4-text:    #e2e8f0;
+  --v4-muted:   #94a3b8;
+  --v4-faint:   #475569;
+  --v4-border:  rgba(148,163,184,0.1);
+}
+
+#v4 {
+  background: var(--v4-bg);
+  /* Dot grid background — Blueprint signature */
+  background-image: radial-gradient(circle, rgba(59,130,246,0.12) 1px, transparent 1px);
+  background-size: 28px 28px;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  color: var(--v4-text);
+}
+
+.v4__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 5vw;
+  border-bottom: 1px solid var(--v4-border);
+}
+
+.v4__logo {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--v4-text);
+  letter-spacing: -0.01em;
+}
+.v4__logo span { color: var(--v4-blue); }
+
+.v4__nav-links {
+  display: flex; align-items: center; gap: 1.75rem; list-style: none;
+}
+.v4__nav-links a {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--v4-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.v4__nav-links a:hover { color: var(--v4-text); }
+
+.v4__hero {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: center;
+  padding: clamp(3rem, 7vw, 6rem) 5vw;
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Small accent tag */
+.v4__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--v4-blue);
+  background: var(--v4-blue-dim);
+  border: 1px solid var(--v4-blue-b);
+  padding: 0.25rem 0.65rem;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.05em;
+}
+
+.v4__h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(2.25rem, 4.5vw, 3.75rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  color: var(--v4-text);
+  margin-bottom: 1.25rem;
+}
+/* Accent word in blue */
+.v4__h1 strong { color: var(--v4-blue); font-weight: 700; }
+
+.v4__body-text {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(0.95rem, 1.3vw, 1.05rem);
+  color: var(--v4-muted);
+  max-width: 46ch;
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+.v4__actions { display: flex; align-items: center; gap: 0.875rem; flex-wrap: wrap; }
+
+.v4__btn-primary {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  background: var(--v4-blue); color: #fff;
+  padding: 0.7rem 1.5rem;
+  border-radius: 4px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600; font-size: 0.9rem;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.12s;
+  box-shadow: 0 0 0 1px rgba(59,130,246,0.4), 0 4px 12px rgba(59,130,246,0.2);
+}
+.v4__btn-primary:hover { background: #2563eb; transform: translateY(-1px); }
+
+.v4__btn-ghost {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.9rem; font-weight: 500;
+  color: var(--v4-muted); padding: 0.7rem 1.25rem;
+  border: 1px solid var(--v4-border); border-radius: 4px;
+  text-decoration: none;
+  transition: color 0.2s, border-color 0.2s;
+}
+.v4__btn-ghost:hover { color: var(--v4-text); border-color: rgba(148,163,184,0.25); }
+
+/* Stats cards — right column, deliberately rotated */
+.v4__stats {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.v4__stat-card {
+  background: var(--v4-surface);
+  border: 1px solid var(--v4-border);
+  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+  width: 220px;
+  /* Slight rotation — Blueprint aesthetic signature */
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.v4__stat-card:nth-child(1) { transform: rotate(-1.5deg); }
+.v4__stat-card:nth-child(2) { transform: rotate(0.8deg); width: 240px; }
+.v4__stat-card:nth-child(3) { transform: rotate(-0.5deg); width: 200px; }
+
+.v4__stat-card:hover {
+  transform: rotate(0) translateY(-3px) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+}
+
+.v4__stat-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--v4-blue);
+  line-height: 1;
+  margin-bottom: 0.3rem;
+}
+.v4__stat-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.75rem;
+  color: var(--v4-muted);
+}
+.v4__stat-change {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--v4-cyan);
+  margin-top: 0.4rem;
+}
+
+@media (max-width: 768px) {
+  .v4__hero { grid-template-columns: 1fr; }
+  .v4__stats { align-items: stretch; }
+  .v4__stat-card { width: 100% !important; transform: none !important; }
+  .v4__nav-links { display: none; }
+}
+
+/* ============================================================
+   VARIANT 5: DARK PREMIUM NOISE — Soft Premium aesthetic
+   Palette: Near-black #0c0c0d + warm cream accents
+   Typography: Geist (system-fallback stack) — clean sans-serif
+   Key: noise texture, pill CTAs, double-bezel card, generous spacing
+   ============================================================ */
+#v5 {
+  /* Geist font stack — use actual Geist if installed, fallback to clean system sans */
+  --v5-font: 'Geist', 'SF Pro Display', -apple-system, 'Helvetica Neue', sans-serif;
+  --v5-bg:       #0c0c0d;
+  --v5-surface:  #161618;
+  --v5-surface2: #1c1c1f;
+  --v5-cream:    #f5f0e8;
+  --v5-cream-dim: rgba(245,240,232,0.06);
+  --v5-cream-b:  rgba(245,240,232,0.12);
+  --v5-amber:    #d97706;  /* warm amber accent */
+  --v5-amber-dim: rgba(217,119,6,0.1);
+  --v5-text:     #f0ebe0;
+  --v5-muted:    rgba(240,235,224,0.5);
+  --v5-faint:    rgba(240,235,224,0.2);
+  --v5-border:   rgba(255,255,255,0.06);
+}
+
+#v5 {
+  background: var(--v5-bg);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  color: var(--v5-text);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Noise texture on fixed pseudo-element — no GPU repaint on scroll */
+#v5::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  opacity: 0.035;
+  pointer-events: none;
+  z-index: 1;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Faint radial glow — center of page */
+#v5::before {
+  content: '';
+  position: absolute;
+  top: 30%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 700px; height: 400px;
+  background: radial-gradient(ellipse, rgba(217,119,6,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.v5__nav {
+  position: relative; z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 5vw;
+  border-bottom: 1px solid var(--v5-border);
+}
+
+.v5__logo {
+  font-family: var(--v5-font);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--v5-text);
+  letter-spacing: -0.01em;
+}
+
+.v5__nav-links {
+  display: flex; align-items: center; gap: 2rem; list-style: none;
+}
+.v5__nav-links a {
+  font-family: var(--v5-font);
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: var(--v5-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.v5__nav-links a:hover { color: var(--v5-text); }
+
+.v5__hero {
+  flex: 1;
+  position: relative; z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  /* Generous py-24 equivalent */
+  padding: clamp(5rem, 11vw, 8rem) 5vw;
+}
+
+.v5__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--v5-font);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--v5-muted);
+  background: var(--v5-cream-dim);
+  border: 1px solid var(--v5-cream-b);
+  padding: 0.28rem 0.75rem;
+  border-radius: 999px;
+  margin-bottom: 2rem;
+  letter-spacing: 0.04em;
+}
+
+.v5__h1 {
+  font-family: var(--v5-font);
+  font-size: clamp(2.5rem, 5.5vw, 4.5rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--v5-text);
+  max-width: 22ch;
+  margin-inline: auto;
+  margin-bottom: 1.25rem;
+}
+
+.v5__sub {
+  font-family: var(--v5-font);
+  font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+  font-weight: 300;
+  color: var(--v5-muted);
+  max-width: 42ch;
+  line-height: 1.75;
+  margin-inline: auto;
+  margin-bottom: 2.75rem;
+}
+
+/* Pill CTA with inner icon — Soft Premium signature */
+.v5__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.875rem;
+  flex-wrap: wrap;
+  margin-bottom: 4rem;
+}
+
+.v5__btn-primary {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: var(--v5-cream);
+  color: #0c0c0d;
+  padding: 0.75rem 1.75rem;
+  border-radius: 999px;  /* pill shape */
+  font-family: var(--v5-font);
+  font-weight: 600; font-size: 0.88rem;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.12s, box-shadow 0.2s;
+  /* Inner "bezel" — 1px shadow on inside top edge simulates depth */
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
+}
+.v5__btn-primary:hover {
+  background: #fffbf3;
+  transform: translateY(-2px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), 0 6px 20px rgba(245,240,232,0.12);
+}
+.v5__btn-primary:active { transform: translateY(0); }
+
+.v5__btn-ghost {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  color: var(--v5-muted);
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  font-family: var(--v5-font);
+  font-size: 0.88rem;
+  text-decoration: none;
+  border: 1px solid var(--v5-border);
+  transition: color 0.2s, border-color 0.2s;
+}
+.v5__btn-ghost:hover { color: var(--v5-text); border-color: var(--v5-cream-b); }
+
+/* Double-bezel card element — Soft Premium signature */
+.v5__card {
+  max-width: 420px;
+  margin-inline: auto;
+  /* Outer ring */
+  border: 1px solid var(--v5-cream-b);
+  border-radius: 20px;
+  padding: 3px;  /* gap between outer ring and inner card */
+  background: var(--v5-cream-dim);
+}
+
+.v5__card-inner {
+  background: var(--v5-surface2);
+  border: 1px solid var(--v5-border);
+  border-radius: 17px;
+  padding: 1.5rem;
+}
+
+.v5__card-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--v5-border);
+  font-family: var(--v5-font);
+}
+.v5__card-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+.v5__card-label {
+  font-size: 0.8rem;
+  color: var(--v5-muted);
+}
+.v5__card-value {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--v5-text);
+}
+.v5__card-pill {
+  font-size: 0.7rem; font-weight: 600;
+  color: #65a30d;
+  background: rgba(101,163,13,0.1);
+  border: 1px solid rgba(101,163,13,0.2);
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+}
+
+@media (max-width: 768px) {
+  .v5__nav-links { display: none; }
+  .v5__h1 { font-size: clamp(2rem, 8vw, 3.25rem); }
+}
+
+/* ============================================================
+   VARIANT 6: BENTO HERO — Terminal Mono aesthetic
+   Palette: #00ff88 (green) + #22d3ee (cyan) on #0a0a0a (near-black)
+   Layout: 2×2 grid — text block + 3 visual placeholder blocks
+   Typography: Space Mono — monospace everything
+   Key: border-based separation only, no shadows, no rounded corners
+   ============================================================ */
+#v6 {
+  --v6-bg:      #0a0a0a;
+  --v6-surface: #111111;
+  --v6-green:   #00ff88;
+  --v6-cyan:    #22d3ee;
+  --v6-text:    #e8e8e8;
+  --v6-muted:   #6b6b6b;
+  --v6-border:  rgba(232,232,232,0.1);
+  --v6-border-bright: rgba(232,232,232,0.18);
+}
+
+#v6 {
+  background: var(--v6-bg);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  color: var(--v6-text);
+  font-family: 'Space Mono', monospace;
+}
+
+.v6__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2vw;
+  border-bottom: 1px solid var(--v6-border-bright);
+}
+
+.v6__logo {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--v6-green);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.v6__nav-links {
+  display: flex; align-items: center; gap: 1.5rem; list-style: none;
+}
+.v6__nav-links a {
+  font-size: 0.72rem;
+  color: var(--v6-muted);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  transition: color 0.15s;
+}
+.v6__nav-links a:hover { color: var(--v6-cyan); }
+
+/* Bento grid: the hero IS the grid */
+.v6__bento {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  /* 1px borders via gap trick */
+  gap: 1px;
+  background: var(--v6-border-bright);
+  border-top: 1px solid var(--v6-border-bright);
+}
+
+.v6__cell {
+  background: var(--v6-bg);
+  padding: clamp(1.75rem, 3.5vw, 3rem);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Cell 1: Text block — top-left */
+.v6__cell--text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.v6__prompt {
+  font-size: 0.7rem;
+  color: var(--v6-green);
+  letter-spacing: 0.05em;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.v6__prompt::before {
+  content: '>';
+  color: var(--v6-cyan);
+}
+
+.v6__h1 {
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--v6-text);
+  margin-bottom: 1rem;
+}
+.v6__h1 span { color: var(--v6-green); }
+
+.v6__sub {
+  font-size: 0.78rem;
+  color: var(--v6-muted);
+  line-height: 1.7;
+  max-width: 38ch;
+  margin-bottom: 2rem;
+}
+
+.v6__actions { display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap; }
+
+.v6__btn-primary {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--v6-bg);
+  background: var(--v6-green);
+  padding: 0.6rem 1.25rem;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  border: none;
+  transition: background 0.15s, transform 0.1s;
+}
+.v6__btn-primary:hover { background: #00e87a; transform: translateY(-1px); }
+
+.v6__btn-ghost {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--v6-cyan);
+  padding: 0.6rem 1.1rem;
+  border: 1px solid var(--v6-cyan);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  transition: background 0.15s;
+}
+.v6__btn-ghost:hover { background: rgba(34,211,238,0.07); }
+
+/* Cell 2: Live feed / log visualization — top-right */
+.v6__cell--feed {
+  background: var(--v6-surface);
+  display: flex;
+  flex-direction: column;
+}
+
+.v6__cell-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--v6-border);
+}
+
+.v6__cell-title {
+  font-size: 0.65rem;
+  color: var(--v6-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.v6__cell-status {
+  font-size: 0.65rem;
+  color: var(--v6-green);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.v6__cell-status::before {
+  content: '';
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--v6-green);
+  animation: v6-blink 1.5s step-end infinite;
+}
+@keyframes v6-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.v6__log {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+  overflow: hidden;
+}
+
+.v6__log-line {
+  font-size: 0.7rem;
+  line-height: 1.4;
+  color: var(--v6-muted);
+  display: flex;
+  gap: 0.75rem;
+}
+.v6__log-time { color: var(--v6-faint, #4a4a4a); flex-shrink: 0; width: 5ch; }
+.v6__log-level-ok { color: var(--v6-green); width: 4ch; flex-shrink: 0; }
+.v6__log-level-info { color: var(--v6-cyan); width: 4ch; flex-shrink: 0; }
+.v6__log-level-warn { color: #f59e0b; width: 4ch; flex-shrink: 0; }
+
+/* Cell 3: Metrics — bottom-left */
+.v6__cell--metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  align-content: start;
+}
+
+.v6__metric {
+  border: 1px solid var(--v6-border);
+  padding: 1rem;
+}
+
+.v6__metric-num {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--v6-cyan);
+  line-height: 1;
+  margin-bottom: 0.3rem;
+}
+.v6__metric-label {
+  font-size: 0.65rem;
+  color: var(--v6-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Cell 4: ASCII/visual art — bottom-right */
+.v6__cell--art {
+  background: var(--v6-surface);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ASCII-style progress bars */
+.v6__ascii-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+  width: 100%;
+}
+.v6__ascii-label {
+  font-size: 0.65rem;
+  color: var(--v6-muted);
+  width: 5ch;
+  text-align: right;
+  flex-shrink: 0;
+}
+.v6__ascii-track {
+  flex: 1;
+  height: 2px;
+  background: var(--v6-border-bright);
+}
+.v6__ascii-fill {
+  height: 100%;
+  background: var(--v6-green);
+}
+.v6__ascii-fill--cyan { background: var(--v6-cyan); }
+.v6__ascii-val {
+  font-size: 0.65rem;
+  color: var(--v6-green);
+  width: 4ch;
+  flex-shrink: 0;
+}
+.v6__ascii-val--cyan { color: var(--v6-cyan); }
+
+@media (max-width: 768px) {
+  .v6__bento { grid-template-columns: 1fr; grid-template-rows: auto; }
+  .v6__cell--feed, .v6__cell--art { display: none; }
+  .v6__nav-links { display: none; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Table of contents — quick nav to each variant -->
+<nav class="toc-nav" aria-label="Hero variant navigation">
+  <span class="toc-nav__label">Variants:</span>
+  <a href="#v1">01 Split — Warm Signal</a>
+  <a href="#v2">02 Centered — Editorial Minimal</a>
+  <a href="#v3">03 Full-Bleed — Dark Luxury</a>
+  <a href="#v4">04 Asymmetric — Blueprint</a>
+  <a href="#v5">05 Dark Noise — Soft Premium</a>
+  <a href="#v6">06 Bento — Terminal Mono</a>
+</nav>
+
+<main>
+
+<!-- ============================================================
+     VARIANT 1: SPLIT HERO — Warm Signal
+     ============================================================ -->
+<section id="v1" aria-label="Hero variant 1: Split layout, Warm Signal aesthetic">
+
+  <nav class="v1__nav" aria-label="Product navigation">
+    <span class="v1__logo">Vessel</span>
+    <ul class="v1__nav-links" role="list">
+      <li><a href="#">Platform</a></li>
+      <li><a href="#">Pricing</a></li>
+      <li><a href="#">Docs</a></li>
+      <li><a href="#" class="v1__nav-cta">Get started</a></li>
+    </ul>
+  </nav>
+
+  <div class="v1__body">
+
+    <!-- Text column — 60% -->
+    <div class="v1__text">
+      <div class="v1__eyebrow reveal" style="--delay:0ms">
+        <span class="v1__eyebrow-pulse"></span>
+        Now shipping
+      </div>
+
+      <h1 class="v1__h1 reveal" style="--delay:80ms">
+        Contracts that<br>close <em>faster</em><br>than you pitch.
+      </h1>
+
+      <p class="v1__body-text reveal" style="--delay:160ms">
+        Vessel automates the paperwork between deal-closed and invoice-paid.
+        CRM sync, e-sign, payment capture — triggered by the pipeline stage
+        you already use. No rewiring needed.
+      </p>
+
+      <div class="v1__actions reveal" style="--delay:240ms">
+        <a href="#" class="v1__btn-primary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          Start free trial
+        </a>
+        <a href="#" class="v1__btn-ghost">See a demo</a>
+      </div>
+    </div>
+
+    <!-- Visual column — 40% -->
+    <div class="v1__visual reveal" style="--delay:200ms">
+
+      <!-- Floating stats badge -->
+      <div class="v1__badge">
+        <div class="v1__badge-dot">
+          <svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        </div>
+        <div>
+          <div class="v1__badge-num">+67%</div>
+          <div class="v1__badge-sub">close rate, last 90 days</div>
+        </div>
+      </div>
+
+      <!-- App mockup with metric bars -->
+      <div class="v1__mockup">
+        <div class="v1__mockup-top">
+          <div class="v1__dot" style="background:#ef4444"></div>
+          <div class="v1__dot" style="background:#f59e0b"></div>
+          <div class="v1__dot" style="background:#22c55e"></div>
+        </div>
+        <div class="v1__mockup-content">
+          <div class="v1__chart-row">
+            <div class="v1__chart-label"><span>Acme Corp</span><span>$48k</span></div>
+            <div class="v1__chart-track"><div class="v1__chart-fill" style="width:88%"></div></div>
+          </div>
+          <div class="v1__chart-row">
+            <div class="v1__chart-label"><span>Northvolt</span><span>$31k</span></div>
+            <div class="v1__chart-track"><div class="v1__chart-fill v1__chart-fill--sage" style="width:63%"></div></div>
+          </div>
+          <div class="v1__chart-row">
+            <div class="v1__chart-label"><span>Tanda</span><span>$22k</span></div>
+            <div class="v1__chart-track"><div class="v1__chart-fill" style="width:47%"></div></div>
+          </div>
+          <div class="v1__chart-row">
+            <div class="v1__chart-label"><span>Clearbit</span><span>$19k</span></div>
+            <div class="v1__chart-track"><div class="v1__chart-fill v1__chart-fill--sage" style="width:41%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     VARIANT 2: CENTERED MINIMAL — Editorial Minimal
+     ============================================================ -->
+<section id="v2" aria-label="Hero variant 2: Centered editorial, minimal">
+
+  <nav class="v2__nav" aria-label="Publication navigation">
+    <span class="v2__logo">The Compendium</span>
+    <ul class="v2__nav-links" role="list">
+      <li><a href="#">Archive</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Subscribe</a></li>
+    </ul>
+  </nav>
+
+  <div class="v2__hero">
+    <div class="v2__issue reveal" style="--delay:0ms">
+      Issue XXIV &mdash; Spring 2026
+    </div>
+
+    <h1 class="v2__h1 reveal" style="--delay:80ms">
+      The quiet art of<br><em>building things</em><br>that last.
+    </h1>
+
+    <p class="v2__sub reveal" style="--delay:180ms">
+      Long-form essays on craft, software, and the discipline of
+      sustained attention in an age that rewards the opposite.
+    </p>
+
+    <a href="#" class="v2__cta reveal" style="--delay:260ms">
+      Read the current issue
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+
+    <div class="v2__meta reveal" style="--delay:340ms">
+      Published fortnightly &middot; 12,400 readers
+    </div>
+  </div>
+
+</section>
+
+<!-- ============================================================
+     VARIANT 3: FULL-BLEED IMAGE — Dark Luxury
+     ============================================================ -->
+<section id="v3" aria-label="Hero variant 3: Full-bleed, dark luxury">
+
+  <nav class="v3__nav" aria-label="Brand navigation">
+    <span class="v3__logo">Moreau</span>
+    <ul class="v3__nav-links" role="list">
+      <li><a href="#">Collections</a></li>
+      <li><a href="#">Ateliers</a></li>
+      <li><a href="#">Heritage</a></li>
+    </ul>
+  </nav>
+
+  <div class="v3__hero">
+    <div class="v3__content">
+      <div class="v3__rule reveal" style="--delay:0ms"></div>
+      <p class="v3__kicker reveal" style="--delay:60ms">
+        Spring — Summer 2026
+      </p>
+      <h1 class="v3__h1 reveal" style="--delay:140ms">
+        Made for people<br>who notice things.
+      </h1>
+      <p class="v3__sub reveal" style="--delay:220ms">
+        Four decades of craft in every piece. Each item is designed to
+        outlast the season it arrives in and the decade after that.
+      </p>
+      <div class="v3__actions reveal" style="--delay:300ms">
+        <a href="#" class="v3__btn-primary">Explore the collection</a>
+        <a href="#" class="v3__btn-ghost">Our story</a>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ============================================================
+     VARIANT 4: ASYMMETRIC + STATS — Blueprint
+     ============================================================ -->
+<section id="v4" aria-label="Hero variant 4: Asymmetric with stats cards, Blueprint aesthetic">
+
+  <nav class="v4__nav" aria-label="Platform navigation">
+    <span class="v4__logo">Arc<span>sys</span></span>
+    <ul class="v4__nav-links" role="list">
+      <li><a href="#">Platform</a></li>
+      <li><a href="#">Pricing</a></li>
+      <li><a href="#">Docs</a></li>
+      <li><a href="#">Status</a></li>
+    </ul>
+  </nav>
+
+  <div class="v4__hero">
+    <!-- Text column — left 60% -->
+    <div class="v4__text">
+      <div class="v4__tag reveal" style="--delay:0ms">v2.4 — Now in GA</div>
+
+      <h1 class="v4__h1 reveal" style="--delay:80ms">
+        Infrastructure<br>that <strong>scales</strong> before<br>you ask it to.
+      </h1>
+
+      <p class="v4__body-text reveal" style="--delay:160ms">
+        Arcsys monitors 47 infrastructure signals in real time and pre-provisions
+        capacity based on patterns it finds in your traffic — not thresholds you
+        set and forget.
+      </p>
+
+      <div class="v4__actions reveal" style="--delay:240ms">
+        <a href="#" class="v4__btn-primary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          Request access
+        </a>
+        <a href="#" class="v4__btn-ghost">View docs</a>
+      </div>
+    </div>
+
+    <!-- Stats cards — right 40%, with rotation transforms -->
+    <div class="v4__stats reveal" style="--delay:200ms">
+      <div class="v4__stat-card">
+        <div class="v4__stat-num">99.97%</div>
+        <div class="v4__stat-label">Uptime SLA, trailing 12 months</div>
+        <div class="v4__stat-change">+0.02pp vs prior year</div>
+      </div>
+      <div class="v4__stat-card">
+        <div class="v4__stat-num">847ms</div>
+        <div class="v4__stat-label">Median pre-provision lead time</div>
+        <div class="v4__stat-change">-312ms since v2.0</div>
+      </div>
+      <div class="v4__stat-card">
+        <div class="v4__stat-num">1.4B</div>
+        <div class="v4__stat-label">Scaling events handled in 2025</div>
+        <div class="v4__stat-change">+63% YoY</div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ============================================================
+     VARIANT 5: DARK NOISE — Soft Premium
+     ============================================================ -->
+<section id="v5" aria-label="Hero variant 5: Dark with noise texture, Soft Premium aesthetic">
+
+  <nav class="v5__nav" aria-label="Application navigation">
+    <span class="v5__logo">Memo</span>
+    <ul class="v5__nav-links" role="list">
+      <li><a href="#">Features</a></li>
+      <li><a href="#">Pricing</a></li>
+      <li><a href="#">Changelog</a></li>
+    </ul>
+  </nav>
+
+  <div class="v5__hero">
+    <div class="v5__label reveal" style="--delay:0ms">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      Ship every day. Remember everything.
+    </div>
+
+    <h1 class="v5__h1 reveal" style="--delay:80ms">
+      The thinking layer<br>between your meetings<br>and your work.
+    </h1>
+
+    <p class="v5__sub reveal" style="--delay:160ms">
+      Memo captures decisions, surfaces context, and connects your
+      async threads — so you spend less time recovering context
+      and more time using it.
+    </p>
+
+    <div class="v5__actions reveal" style="--delay:240ms">
+      <a href="#" class="v5__btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        Start for free
+      </a>
+      <a href="#" class="v5__btn-ghost">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+        See how it works
+      </a>
+    </div>
+
+    <!-- Double-bezel card -->
+    <div class="v5__card reveal" style="--delay:320ms">
+      <div class="v5__card-inner">
+        <div class="v5__card-row">
+          <span class="v5__card-label">Last decision captured</span>
+          <span class="v5__card-value">2 mins ago</span>
+        </div>
+        <div class="v5__card-row">
+          <span class="v5__card-label">Context threads active</span>
+          <span class="v5__card-value">14</span>
+        </div>
+        <div class="v5__card-row">
+          <span class="v5__card-label">Meeting to memo latency</span>
+          <span class="v5__card-pill">83ms</span>
+        </div>
+        <div class="v5__card-row">
+          <span class="v5__card-label">Storage used</span>
+          <span class="v5__card-value">3.2 GB / unlimited</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ============================================================
+     VARIANT 6: BENTO HERO — Terminal Mono
+     ============================================================ -->
+<section id="v6" aria-label="Hero variant 6: Bento grid, Terminal Mono aesthetic">
+
+  <nav class="v6__nav" aria-label="Terminal navigation">
+    <span class="v6__logo">RUNE.IO</span>
+    <ul class="v6__nav-links" role="list">
+      <li><a href="#">docs</a></li>
+      <li><a href="#">api</a></li>
+      <li><a href="#">status</a></li>
+      <li><a href="#">login</a></li>
+    </ul>
+  </nav>
+
+  <!-- 2×2 bento grid -->
+  <div class="v6__bento">
+
+    <!-- Cell 1: Text — top-left -->
+    <div class="v6__cell v6__cell--text">
+      <div class="v6__prompt">_ deploy.config</div>
+
+      <h1 class="v6__h1 reveal">
+        Write infra.<br><span>Run anywhere.</span><br>Zero config.
+      </h1>
+
+      <p class="v6__sub reveal" style="--delay:100ms">
+        Rune reads your codebase and generates a deployment
+        config that actually works. No YAML archaeology.
+        No ops oncall needed.
+      </p>
+
+      <div class="v6__actions reveal" style="--delay:200ms">
+        <a href="#" class="v6__btn-primary">$ rune init</a>
+        <a href="#" class="v6__btn-ghost">read the docs</a>
+      </div>
+    </div>
+
+    <!-- Cell 2: Live log feed — top-right -->
+    <div class="v6__cell v6__cell--feed reveal" style="--delay:80ms">
+      <div class="v6__cell-header">
+        <span class="v6__cell-title">deploy.log</span>
+        <span class="v6__cell-status">LIVE</span>
+      </div>
+      <div class="v6__log" role="log" aria-label="Deployment log">
+        <div class="v6__log-line"><span class="v6__log-time">09:41</span><span class="v6__log-level-ok">OK</span><span>build complete — 47s</span></div>
+        <div class="v6__log-line"><span class="v6__log-time">09:41</span><span class="v6__log-level-info">INF</span><span>pushing to registry...</span></div>
+        <div class="v6__log-line"><span class="v6__log-time">09:42</span><span class="v6__log-level-ok">OK</span><span>image pushed: v2.4.1</span></div>
+        <div class="v6__log-line"><span class="v6__log-time">09:42</span><span class="v6__log-level-info">INF</span><span>provisioning edge nodes</span></div>
+        <div class="v6__log-line"><span class="v6__log-time">09:43</span><span class="v6__log-level-ok">OK</span><span>3/3 nodes healthy</span></div>
+        <div class="v6__log-line"><span class="v6__log-time">09:43</span><span class="v6__log-level-info">INF</span><span>traffic cutover: 10%</span></div>
+        <div class="v6__log-line"><span class="v6__log-time">09:44</span><span class="v6__log-level-ok">OK</span><span>traffic cutover: 100%</span></div>
+        <div class="v6__log-line"><span class="v6__log-time">09:44</span><span class="v6__log-level-warn">WRN</span><span>old pods draining (2m)</span></div>
+        <div class="v6__log-line"><span class="v6__log-time">09:46</span><span class="v6__log-level-ok">OK</span><span>deploy finished — 4m 58s</span></div>
+      </div>
+    </div>
+
+    <!-- Cell 3: Metrics — bottom-left -->
+    <div class="v6__cell v6__cell--metrics reveal" style="--delay:120ms">
+      <div class="v6__metric">
+        <div class="v6__metric-num">4.9s</div>
+        <div class="v6__metric-label">p95 deploy</div>
+      </div>
+      <div class="v6__metric">
+        <div class="v6__metric-num" style="color:var(--v6-green)">99.94</div>
+        <div class="v6__metric-label">uptime %</div>
+      </div>
+      <div class="v6__metric">
+        <div class="v6__metric-num">312</div>
+        <div class="v6__metric-label">active deploys</div>
+      </div>
+      <div class="v6__metric">
+        <div class="v6__metric-num" style="color:var(--v6-green)">0</div>
+        <div class="v6__metric-label">incidents today</div>
+      </div>
+    </div>
+
+    <!-- Cell 4: ASCII resource bars — bottom-right -->
+    <div class="v6__cell v6__cell--art reveal" style="--delay:160ms">
+      <div style="width:100%">
+        <div class="v6__ascii-bar">
+          <span class="v6__ascii-label">CPU</span>
+          <div class="v6__ascii-track"><div class="v6__ascii-fill" style="width:34%"></div></div>
+          <span class="v6__ascii-val">34%</span>
+        </div>
+        <div class="v6__ascii-bar">
+          <span class="v6__ascii-label">MEM</span>
+          <div class="v6__ascii-track"><div class="v6__ascii-fill v6__ascii-fill--cyan" style="width:61%"></div></div>
+          <span class="v6__ascii-val v6__ascii-val--cyan">61%</span>
+        </div>
+        <div class="v6__ascii-bar">
+          <span class="v6__ascii-label">NET</span>
+          <div class="v6__ascii-track"><div class="v6__ascii-fill" style="width:18%"></div></div>
+          <span class="v6__ascii-val">18%</span>
+        </div>
+        <div class="v6__ascii-bar">
+          <span class="v6__ascii-label">DISK</span>
+          <div class="v6__ascii-track"><div class="v6__ascii-fill v6__ascii-fill--cyan" style="width:47%"></div></div>
+          <span class="v6__ascii-val v6__ascii-val--cyan">47%</span>
+        </div>
+        <div class="v6__ascii-bar">
+          <span class="v6__ascii-label">GPU</span>
+          <div class="v6__ascii-track"><div class="v6__ascii-fill" style="width:82%"></div></div>
+          <span class="v6__ascii-val">82%</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</main>
+
+<script>
+/* ============================================================
+   INTERSECTION OBSERVER — staggered entrance reveals
+   Shared across all 6 variants
+   ============================================================ */
+(function () {
+  var els = document.querySelectorAll('.reveal');
+
+  if (!window.IntersectionObserver) {
+    els.forEach(function(el) { el.classList.add('is-visible'); });
+    return;
+  }
+
+  var observer = new IntersectionObserver(
+    function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.08, rootMargin: '0px 0px -30px 0px' }
+  );
+
+  els.forEach(function(el) { observer.observe(el); });
+})();
+</script>
+</body>
+</html>
