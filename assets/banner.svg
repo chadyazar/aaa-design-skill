@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 320" role="img" aria-label="aaa-design — AAA-quality HTML, dashboards, slide decks, diagrams">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0d0a25"/>
+      <stop offset="1" stop-color="#1a0f3d"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#533afd"/>
+      <stop offset="0.5" stop-color="#a78bfa"/>
+      <stop offset="1" stop-color="#f96bee"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="320" fill="url(#bg)"/>
+  <g opacity="0.06" fill="none" stroke="#a78bfa" stroke-width="1">
+    <path d="M 0 80 L 1280 80 M 0 160 L 1280 160 M 0 240 L 1280 240"/>
+    <path d="M 80 0 L 80 320 M 240 0 L 240 320 M 400 0 L 400 320 M 560 0 L 560 320 M 720 0 L 720 320 M 880 0 L 880 320 M 1040 0 L 1040 320 M 1200 0 L 1200 320"/>
+  </g>
+  <rect x="80" y="105" width="6" height="110" fill="url(#accent)" rx="3"/>
+  <text x="110" y="158" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="64" font-weight="300" fill="#ffffff" letter-spacing="-2">aaa-design</text>
+  <text x="110" y="195" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="22" font-weight="300" fill="#a78bfa" letter-spacing="-0.5">AAA-quality HTML &middot; dashboards &middot; slide decks &middot; diagrams</text>
+  <text x="110" y="225" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" font-weight="300" fill="#7c6fbb" letter-spacing="0.5">7-LAYER SYSTEM &middot; 16 BRAND SPECS &middot; WEEKLY REFRESH</text>
+  <g transform="translate(1080,80)">
+    <rect width="120" height="22" rx="4" fill="#533afd" opacity="0.18"/>
+    <text x="60" y="15" font-family="ui-monospace,monospace" font-size="11" fill="#c8b8ff" text-anchor="middle" letter-spacing="1">SKILL / PUBLIC</text>
+  </g>
+</svg>
